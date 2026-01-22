@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skillio - AI Agent's Capability Discovery Hub</title>
+  <meta name="description" content="Find and install AI skills using natural language. Say what you want to do, Skillio finds the right tool.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg': '#0A0A0B',
+            'surface': '#111113',
+            'surface-elevated': '#18181B',
+            'primary': '#3B82F6',
+            'primary-hover': '#2563EB',
+            'accent': '#10B981',
+            'accent-secondary': '#8B5CF6',
+            'text-main': '#FAFAFA',
+            'text-secondary': '#A1A1AA',
+            'text-muted': '#71717A',
+            'border': '#27272A',
+            'border-subtle': '#1F1F23',
+            'code-bg': '#0D0D0F',
+            'terminal-green': '#22C55E',
+            'terminal-yellow': '#FACC15',
+            'terminal-red': '#EF4444',
+            'terminal-blue': '#60A5FA',
+            'terminal-purple': '#A78BFA',
+          },
+          fontFamily: {
+            'sans': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background-color: #0A0A0B;
+      color: #FAFAFA;
+    }
+    
+    .hero-glow {
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent);
+    }
+    
+    .text-gradient {
+      background: linear-gradient(to right, #3B82F6, #8B5CF6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .card-glow {
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.1);
+    }
+    
+    .terminal-window {
+      background: linear-gradient(to bottom, #18181B, #0D0D0F);
+    }
+    
+    .typing-cursor::after {
+      content: '▋';
+      animation: blink 1s step-end infinite;
+    }
+    
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .code-line {
+      animation: slideIn 0.3s ease-out forwards;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 border-b border-border-subtle bg-bg/80 backdrop-blur-xl">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <span class="text-white font-bold text-sm">S</span>
+        </div>
+        <span class="font-semibold text-text-main text-lg">Skillio</span>
+      </a>
+      
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-text-secondary hover:text-text-main transition-colors text-sm">Features</a>
+        <a href="#how-it-works" class="text-text-secondary hover:text-text-main transition-colors text-sm">How it works</a>
+        <a href="https://github.com/copyboy/skillio" class="text-text-secondary hover:text-text-main transition-colors text-sm">GitHub</a>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/copyboy/skillio" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-surface-elevated transition-colors text-sm">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>Star</span>
+        </a>
+        <a href="#install" class="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover transition-colors text-white text-sm font-medium">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center hero-glow pt-16">
+    <div class="max-w-6xl mx-auto px-6 py-24 text-center">
+      
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-surface mb-8 fade-in">
+        <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+        <span class="text-text-secondary text-sm">Open Source • MIT Licensed</span>
+      </div>
+      
+      <!-- Main Headline -->
+      <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-text-main leading-tight mb-6 fade-in" style="animation-delay: 0.1s;">
+        Find AI Skills with<br>
+        <span class="text-gradient">Natural Language</span>
+      </h1>
+      
+      <!-- Subtitle -->
+      <p class="text-xl md:text-2xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed fade-in" style="animation-delay: 0.2s;">
+        Say what you want to do, Skillio finds the right tool.<br>
+        Your AI Agent's capability discovery hub.
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 fade-in" style="animation-delay: 0.3s;">
+        <a href="#install" class="px-8 py-4 rounded-xl bg-primary hover:bg-primary-hover transition-all text-white font-semibold text-lg shadow-lg hover:shadow-primary/25">
+          Get Started Free
+        </a>
+        <a href="https://github.com/copyboy/skillio" class="px-8 py-4 rounded-xl border border-border hover:bg-surface-elevated transition-colors text-text-main font-medium text-lg">
+          View on GitHub →
+        </a>
+      </div>
+      
+      <!-- Terminal Demo -->
+      <div class="max-w-3xl mx-auto fade-in" style="animation-delay: 0.4s;">
+        <div class="terminal-window rounded-2xl border border-border overflow-hidden card-glow">
+          <!-- Terminal Header -->
+          <div class="flex items-center gap-2 px-4 py-3 bg-surface-elevated border-b border-border">
+            <div class="flex gap-2">
+              <div class="w-3 h-3 rounded-full bg-terminal-red"></div>
+              <div class="w-3 h-3 rounded-full bg-terminal-yellow"></div>
+              <div class="w-3 h-3 rounded-full bg-terminal-green"></div>
+            </div>
+            <span class="text-text-muted text-sm ml-2 font-mono">terminal</span>
+          </div>
+          
+          <!-- Terminal Content -->
+          <div class="p-6 font-mono text-sm md:text-base text-left space-y-4">
+            <!-- Command 1 -->
+            <div class="code-line" style="animation-delay: 0.6s;">
+              <span class="text-terminal-green">$</span>
+              <span class="text-text-main ml-2">skillio search "download YouTube video"</span>
+            </div>
+            
+            <!-- Output 1 -->
+            <div class="pl-4 space-y-2 code-line" style="animation-delay: 0.8s;">
+              <div class="text-text-muted">🔍 Searching for: download YouTube video</div>
+              <div class="mt-3 p-4 rounded-lg bg-code-bg border border-border-subtle">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="text-terminal-blue font-semibold">video-downloader</span>
+                    <span class="text-text-muted ml-3">Score: 14.1</span>
+                  </div>
+                  <span class="text-terminal-green">★ Recommended</span>
+                </div>
+                <div class="text-text-secondary mt-1">Download videos from YouTube, Bilibili, and 1000+ sites</div>
+                <div class="text-text-muted text-xs mt-2">Source: yt-dlp/yt-dlp</div>
+              </div>
+            </div>
+            
+            <!-- Command 2 -->
+            <div class="code-line" style="animation-delay: 1.0s;">
+              <span class="text-terminal-green">$</span>
+              <span class="text-text-main ml-2">skillio install video-downloader</span>
+            </div>
+            
+            <!-- Output 2 -->
+            <div class="pl-4 code-line" style="animation-delay: 1.2s;">
+              <div class="text-terminal-green">✅ Successfully installed video-downloader!</div>
+              <div class="text-text-muted mt-1">   Location: ~/.cursor/skills/video-downloader/</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-32 bg-surface">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold text-text-main mb-6">
+          Why Skillio?
+        </h2>
+        <p class="text-xl text-text-secondary max-w-2xl mx-auto">
+          Stop memorizing tool names. Just describe what you need.
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        
+        <!-- Feature 1 -->
+        <div class="p-8 rounded-2xl bg-bg border border-border hover:border-primary/50 transition-colors group">
+          <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+            <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-text-main mb-3">Intent-Based Search</h3>
+          <p class="text-text-secondary leading-relaxed">
+            Say "I want to download videos" or "PDF 转 Word" — Skillio understands your intent and finds the right skill.
+          </p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="p-8 rounded-2xl bg-bg border border-border hover:border-accent/50 transition-colors group">
+          <div class="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
+            <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-text-main mb-3">One-Click Install</h3>
+          <p class="text-text-secondary leading-relaxed">
+            Install skills directly to Cursor, Claude Desktop, or any AI environment. Full documentation and scripts included.
+          </p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="p-8 rounded-2xl bg-bg border border-border hover:border-accent-secondary/50 transition-colors group">
+          <div class="w-14 h-14 rounded-xl bg-accent-secondary/10 flex items-center justify-center mb-6 group-hover:bg-accent-secondary/20 transition-colors">
+            <svg class="w-7 h-7 text-accent-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-text-main mb-3">50+ Curated Skills</h3>
+          <p class="text-text-secondary leading-relaxed">
+            Video, PDF, image, code, AI — skills covering your daily needs, backed by battle-tested open-source projects.
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-32">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold text-text-main mb-6">
+          How It Works
+        </h2>
+        <p class="text-xl text-text-secondary max-w-2xl mx-auto">
+          Three steps to give your AI superpowers
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-12">
+        
+        <!-- Step 1 -->
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl font-bold text-primary">1</span>
+          </div>
+          <h3 class="text-xl font-semibold text-text-main mb-3">Describe Your Need</h3>
+          <p class="text-text-secondary">
+            Use natural language — English or Chinese. No need to know the tool name.
+          </p>
+          <div class="mt-6 p-4 rounded-xl bg-surface border border-border font-mono text-sm">
+            <span class="text-terminal-green">$</span>
+            <span class="text-text-main ml-2">skillio search "convert video to GIF"</span>
+          </div>
+        </div>
+        
+        <!-- Step 2 -->
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl font-bold text-accent">2</span>
+          </div>
+          <h3 class="text-xl font-semibold text-text-main mb-3">Skillio Matches</h3>
+          <p class="text-text-secondary">
+            Our engine matches your intent to curated skills with quality scores.
+          </p>
+          <div class="mt-6 p-4 rounded-xl bg-surface border border-border text-left">
+            <div class="flex items-center gap-2">
+              <span class="text-terminal-green">★</span>
+              <span class="text-terminal-blue font-mono">video-converter</span>
+            </div>
+            <p class="text-text-muted text-sm mt-1">Powered by FFmpeg • Score: 9.8</p>
+          </div>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-accent-secondary/10 border border-accent-secondary/20 flex items-center justify-center mx-auto mb-6">
+            <span class="text-2xl font-bold text-accent-secondary">3</span>
+          </div>
+          <h3 class="text-xl font-semibold text-text-main mb-3">Install & Use</h3>
+          <p class="text-text-secondary">
+            One command to install. Your AI can now use the skill immediately.
+          </p>
+          <div class="mt-6 p-4 rounded-xl bg-surface border border-border font-mono text-sm">
+            <span class="text-terminal-green">$</span>
+            <span class="text-text-main ml-2">skillio install video-converter</span>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Preview Section -->
+  <section class="py-32 bg-surface">
+    <div class="max-w-6xl mx-auto px-6">
+      
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-text-main mb-6">
+          Popular Skills
+        </h2>
+        <p class="text-xl text-text-secondary">
+          Powered by battle-tested open-source projects
+        </p>
+      </div>
+      
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">📹</span>
+            <span class="font-semibold text-text-main">video-downloader</span>
+          </div>
+          <p class="text-text-secondary text-sm">Download from YouTube, Bilibili, 1000+ sites</p>
+          <p class="text-text-muted text-xs mt-2">yt-dlp • ⭐ 143k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">🎬</span>
+            <span class="font-semibold text-text-main">video-converter</span>
+          </div>
+          <p class="text-text-secondary text-sm">Convert formats, extract audio, create GIFs</p>
+          <p class="text-text-muted text-xs mt-2">FFmpeg • ⭐ 47k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">📄</span>
+            <span class="font-semibold text-text-main">pdf-converter</span>
+          </div>
+          <p class="text-text-secondary text-sm">PDF to Word, images, and more</p>
+          <p class="text-text-muted text-xs mt-2">pandoc • ⭐ 35k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">🔍</span>
+            <span class="font-semibold text-text-main">code-search</span>
+          </div>
+          <p class="text-text-secondary text-sm">Fast code search with regex support</p>
+          <p class="text-text-muted text-xs mt-2">ripgrep • ⭐ 51k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">🖼️</span>
+            <span class="font-semibold text-text-main">image-ocr</span>
+          </div>
+          <p class="text-text-secondary text-sm">Extract text from images</p>
+          <p class="text-text-muted text-xs mt-2">tesseract • ⭐ 62k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">🎙️</span>
+            <span class="font-semibold text-text-main">speech-to-text</span>
+          </div>
+          <p class="text-text-secondary text-sm">Transcribe audio with Whisper</p>
+          <p class="text-text-muted text-xs mt-2">whisper • ⭐ 76k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">🌐</span>
+            <span class="font-semibold text-text-main">web-archiver</span>
+          </div>
+          <p class="text-text-secondary text-sm">Save webpages for offline</p>
+          <p class="text-text-muted text-xs mt-2">ArchiveBox • ⭐ 23k</p>
+        </div>
+        
+        <div class="p-5 rounded-xl bg-bg border border-border hover:border-primary/30 transition-colors">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-2xl">🤖</span>
+            <span class="font-semibold text-text-main">llm-client</span>
+          </div>
+          <p class="text-text-secondary text-sm">CLI interface for LLM APIs</p>
+          <p class="text-text-muted text-xs mt-2">llm • ⭐ 5k</p>
+        </div>
+        
+      </div>
+      
+      <div class="text-center mt-12">
+        <a href="https://github.com/copyboy/skillio" class="inline-flex items-center gap-2 text-primary hover:text-primary-hover transition-colors">
+          <span>View all 50+ skills</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Installation Section -->
+  <section id="install" class="py-32">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      
+      <h2 class="text-4xl md:text-5xl font-bold text-text-main mb-6">
+        Get Started in Seconds
+      </h2>
+      <p class="text-xl text-text-secondary mb-12">
+        Install with pip and start finding skills immediately
+      </p>
+      
+      <!-- Install Command -->
+      <div class="max-w-xl mx-auto mb-16">
+        <div class="p-6 rounded-2xl bg-surface border border-border">
+          <div class="flex items-center justify-between">
+            <code class="font-mono text-lg text-text-main">
+              <span class="text-terminal-green">$</span> pip install skillio
+            </code>
+            <button onclick="navigator.clipboard.writeText('pip install skillio')" class="px-4 py-2 rounded-lg bg-surface-elevated hover:bg-border transition-colors text-text-secondary text-sm">
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quick Example -->
+      <div class="max-w-2xl mx-auto">
+        <div class="terminal-window rounded-2xl border border-border overflow-hidden text-left">
+          <div class="flex items-center gap-2 px-4 py-3 bg-surface-elevated border-b border-border">
+            <div class="flex gap-2">
+              <div class="w-3 h-3 rounded-full bg-terminal-red"></div>
+              <div class="w-3 h-3 rounded-full bg-terminal-yellow"></div>
+              <div class="w-3 h-3 rounded-full bg-terminal-green"></div>
+            </div>
+            <span class="text-text-muted text-sm ml-2 font-mono">Quick Start</span>
+          </div>
+          <div class="p-6 font-mono text-sm space-y-3">
+            <div><span class="text-text-muted"># Install</span></div>
+            <div><span class="text-terminal-green">$</span> <span class="text-text-main">pip install skillio</span></div>
+            <div class="pt-2"><span class="text-text-muted"># Search for what you need</span></div>
+            <div><span class="text-terminal-green">$</span> <span class="text-text-main">skillio search "I want to download videos"</span></div>
+            <div class="pt-2"><span class="text-text-muted"># Install the skill</span></div>
+            <div><span class="text-terminal-green">$</span> <span class="text-text-main">skillio install video-downloader</span></div>
+            <div class="pt-2"><span class="text-text-muted"># View installed skills</span></div>
+            <div><span class="text-terminal-green">$</span> <span class="text-text-main">skillio list</span></div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="py-32 bg-surface relative overflow-hidden">
+    <div class="absolute inset-0 hero-glow opacity-50"></div>
+    <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+      
+      <h2 class="text-4xl md:text-5xl font-bold text-text-main mb-6">
+        Ready to Supercharge Your AI?
+      </h2>
+      <p class="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">
+        Join developers who use Skillio to give their AI Agents new capabilities.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#install" class="px-8 py-4 rounded-xl bg-primary hover:bg-primary-hover transition-all text-white font-semibold text-lg shadow-lg hover:shadow-primary/25">
+          Get Started Free
+        </a>
+        <a href="https://github.com/copyboy/skillio" class="px-8 py-4 rounded-xl border border-border hover:bg-surface-elevated transition-colors text-text-main font-medium text-lg flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          Star on GitHub
+        </a>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-border">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <span class="text-white font-bold text-sm">S</span>
+          </div>
+          <span class="font-semibold text-text-main">Skillio</span>
+        </div>
+        
+        <div class="flex items-center gap-8 text-text-secondary text-sm">
+          <a href="https://github.com/copyboy/skillio" class="hover:text-text-main transition-colors">GitHub</a>
+          <a href="https://github.com/copyboy/skillio/issues" class="hover:text-text-main transition-colors">Issues</a>
+          <a href="https://github.com/copyboy/skillio/blob/main/LICENSE" class="hover:text-text-main transition-colors">MIT License</a>
+        </div>
+        
+        <p class="text-text-muted text-sm">
+          © 2026 Skillio. Built with ❤️
+        </p>
+        
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
