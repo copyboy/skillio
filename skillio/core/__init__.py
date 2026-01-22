@@ -1,7 +1,12 @@
 """Skillio core modules."""
 
 from skillio.core.search import search_skills, get_skill_info, get_all_skills
-from skillio.core.install import install_skill, list_installed, remove_skill
+from skillio.core.install import (
+    install_skill, 
+    list_installed, 
+    remove_skill,
+    detect_ai_environments
+)
 
 __all__ = [
     "search_skills",
@@ -10,4 +15,5 @@ __all__ = [
     "install_skill",
     "list_installed",
     "remove_skill",
+    "detect_ai_environments",
 ]

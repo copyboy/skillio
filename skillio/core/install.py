@@ -2,13 +2,16 @@
 Skillio Installation Module
 
 Handles skill installation, removal, and management.
+Integrates with skill-seekers for high-quality Skill generation.
 """
 
 import os
 import json
 import shutil
+import subprocess
+import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 from skillio.core.search import get_skill_info
 
@@ -18,21 +21,139 @@ def _get_default_install_path() -> Path:
     
     Priority:
     1. SKILLIO_INSTALL_PATH env var
-    2. ~/.cursor/skills/ (Cursor IDE)
-    3. ~/.skillio/skills/ (standalone)
+    2. Project-level .cursor/skills/ (if in a Cursor project)
+    3. ~/.cursor/skills/ (Cursor IDE global)
+    4. ~/.skillio/skills/ (standalone)
     """
     # Check env var
     env_path = os.environ.get("SKILLIO_INSTALL_PATH")
     if env_path:
         return Path(env_path)
     
-    # Check for Cursor skills directory
+    # Check for project-level Cursor directory
+    project_root = _find_project_root()
+    if project_root:
+        project_cursor = project_root / ".cursor" / "skills"
+        if project_cursor.exists() or (project_root / ".cursor").exists():
+            return project_cursor
+    
+    # Check for Cursor global skills directory
     cursor_path = Path.home() / ".cursor" / "skills"
     if cursor_path.exists():
         return cursor_path
     
     # Default to skillio directory
     return Path.home() / ".skillio" / "skills"
+
+
+def _find_project_root() -> Optional[Path]:
+    """Find the project root by looking for .git or .cursor directory."""
+    cwd = Path.cwd()
+    
+    for parent in [cwd] + list(cwd.parents):
+        if (parent / ".git").exists() or (parent / ".cursor").exists():
+            return parent
+    
+    return None
+
+
+def detect_ai_environments() -> List[dict]:
+    """Detect available AI environments for skill installation.
+    
+    Returns:
+        List of detected environments with type, scope, and path.
+    """
+    environments = []
+    
+    # 1. Check project-level directories
+    project_root = _find_project_root()
+    if project_root:
+        # Cursor project
+        cursor_project = project_root / ".cursor" / "skills"
+        if cursor_project.exists():
+            environments.append({
+                "type": "cursor",
+                "scope": "project",
+                "path": cursor_project,
+                "exists": True
+            })
+        elif (project_root / ".cursor").exists():
+            environments.append({
+                "type": "cursor",
+                "scope": "project", 
+                "path": cursor_project,
+                "exists": False
+            })
+        
+        # Windsurf project
+        windsurf_project = project_root / ".windsurf" / "skills"
+        if (project_root / ".windsurf").exists():
+            environments.append({
+                "type": "windsurf",
+                "scope": "project",
+                "path": windsurf_project,
+                "exists": windsurf_project.exists()
+            })
+    
+    # 2. Check global directories
+    # Cursor global
+    cursor_global = Path.home() / ".cursor" / "skills"
+    if cursor_global.parent.exists():
+        environments.append({
+            "type": "cursor",
+            "scope": "global",
+            "path": cursor_global,
+            "exists": cursor_global.exists()
+        })
+    
+    # Claude Desktop (macOS)
+    claude_path = Path.home() / "Library" / "Application Support" / "Claude"
+    if claude_path.exists():
+        environments.append({
+            "type": "claude_desktop",
+            "scope": "global",
+            "path": claude_path / "skills",
+            "exists": (claude_path / "skills").exists()
+        })
+    
+    # Continue (VSCode extension)
+    continue_path = Path.home() / ".continue" / "skills"
+    if continue_path.parent.exists():
+        environments.append({
+            "type": "continue",
+            "scope": "global",
+            "path": continue_path,
+            "exists": continue_path.exists()
+        })
+    
+    # 3. Standalone fallback
+    skillio_path = Path.home() / ".skillio" / "skills"
+    environments.append({
+        "type": "standalone",
+        "scope": "global",
+        "path": skillio_path,
+        "exists": skillio_path.exists()
+    })
+    
+    return environments
+
+
+def _check_skill_seekers() -> bool:
+    """Check if skill-seekers is installed."""
+    return shutil.which("skill-seekers") is not None
+
+
+def _install_skill_seekers() -> bool:
+    """Install skill-seekers package."""
+    try:
+        subprocess.run(
+            ["pip", "install", "skill-seekers"],
+            check=True,
+            capture_output=True
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 
 def _get_installed_skills_registry() -> Path:
@@ -63,19 +184,26 @@ def _save_installed_registry(registry: dict):
 def install_skill(
     skill_name: str,
     target: Optional[str] = None,
-    force: bool = False
+    force: bool = False,
+    use_skill_seekers: bool = True,
+    enhance: bool = True
 ) -> dict:
     """Install a skill.
+    
+    For GitHub-sourced skills, uses skill-seekers to generate high-quality
+    Skill with documentation, scripts, and references.
     
     Args:
         skill_name: Name of the skill to install
         target: Custom installation directory
         force: Force reinstall if already installed
+        use_skill_seekers: Use skill-seekers for GitHub sources (default: True)
+        enhance: Run AI enhancement on generated Skill (default: True)
     
     Returns:
         Result dict with success status and details
     """
-    # Get skill info
+    # Get skill info from index
     skill = get_skill_info(skill_name)
     if not skill:
         return {
@@ -95,30 +223,192 @@ def install_skill(
             "error": f"Skill '{skill_name}' is already installed. Use --force to reinstall."
         }
     
-    # Create skill directory
-    skill_path.mkdir(parents=True, exist_ok=True)
+    # Remove existing if force reinstall
+    if skill_path.exists() and force:
+        shutil.rmtree(skill_path)
     
-    # Generate SKILL.md
-    skill_md_content = _generate_skill_md(skill)
-    skill_md_path = skill_path / "SKILL.md"
+    source = skill.get("source", {})
+    source_type = source.get("type", "")
     
-    with open(skill_md_path, "w", encoding="utf-8") as f:
-        f.write(skill_md_content)
+    # For GitHub sources, use skill-seekers
+    if source_type == "github" and use_skill_seekers:
+        result = _install_with_skill_seekers(
+            skill=skill,
+            skill_path=skill_path,
+            enhance=enhance
+        )
+        if not result["success"]:
+            # Fallback to simple generation
+            result = _install_simple(skill, skill_path)
+    else:
+        # For non-GitHub sources, use simple generation
+        result = _install_simple(skill, skill_path)
+    
+    if not result["success"]:
+        return result
     
     # Update registry
     registry["skills"][skill_name] = {
         "version": skill.get("version", "1.0.0"),
         "path": str(skill_path),
-        "source": skill.get("source", {}),
-        "installed_at": str(Path.cwd())
+        "source": source,
+        "installed_at": str(Path.cwd()),
+        "method": result.get("method", "simple")
     }
     _save_installed_registry(registry)
     
     return {
         "success": True,
         "path": str(skill_path),
-        "version": skill.get("version", "1.0.0")
+        "version": skill.get("version", "1.0.0"),
+        "method": result.get("method", "simple"),
+        "contents": result.get("contents", [])
     }
+
+
+def _install_with_skill_seekers(
+    skill: dict,
+    skill_path: Path,
+    enhance: bool = True
+) -> dict:
+    """Install a skill using skill-seekers for high-quality generation.
+    
+    Args:
+        skill: Skill metadata dict
+        skill_path: Target installation path
+        enhance: Whether to run AI enhancement
+    
+    Returns:
+        Result dict with success status
+    """
+    source = skill.get("source", {})
+    repo = source.get("repo", "")
+    skill_name = skill.get("name", "")
+    
+    if not repo:
+        return {
+            "success": False,
+            "error": "No GitHub repo specified in skill source"
+        }
+    
+    # Check/install skill-seekers
+    if not _check_skill_seekers():
+        if not _install_skill_seekers():
+            return {
+                "success": False,
+                "error": "Failed to install skill-seekers. Please run: pip install skill-seekers"
+            }
+    
+    # Create temp directory for generation
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # skill-seekers outputs to ./output/ by default
+        work_dir = Path(temp_dir)
+        
+        try:
+            # Step 1: Generate skill from GitHub
+            # skill-seekers github --repo owner/repo --name skill-name
+            cmd = [
+                "skill-seekers", "github",
+                "--repo", repo,
+                "--name", skill_name,
+                "--non-interactive"  # Fail fast on rate limits
+            ]
+            
+            # Add enhance flag if requested
+            if enhance:
+                cmd.append("--enhance-local")
+            
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minutes timeout
+                cwd=str(work_dir)  # Run in temp directory
+            )
+            
+            # skill-seekers outputs to ./output/<name>/
+            output_dir = work_dir / "output" / skill_name
+            
+            # Also check for repo-based naming (e.g., output/yt-dlp/)
+            if not output_dir.exists():
+                # Try to find any output directory
+                output_base = work_dir / "output"
+                if output_base.exists():
+                    for item in output_base.iterdir():
+                        if item.is_dir() and item.name != "__pycache__":
+                            output_dir = item
+                            break
+            
+            if result.returncode != 0 and not output_dir.exists():
+                error_msg = result.stderr or result.stdout or "Unknown error"
+                return {
+                    "success": False,
+                    "error": f"skill-seekers failed: {error_msg[:200]}"
+                }
+            
+            if not output_dir.exists():
+                return {
+                    "success": False,
+                    "error": "skill-seekers did not generate output directory"
+                }
+            
+            # Step 2: Move to target location
+            skill_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            if skill_path.exists():
+                shutil.rmtree(skill_path)
+            
+            shutil.move(str(output_dir), str(skill_path))
+            
+            # List generated contents
+            contents = []
+            for item in skill_path.rglob("*"):
+                if item.is_file():
+                    contents.append(str(item.relative_to(skill_path)))
+            
+            return {
+                "success": True,
+                "method": "skill-seekers",
+                "contents": sorted(contents)[:20]  # Limit to first 20 files
+            }
+            
+        except subprocess.TimeoutExpired:
+            return {
+                "success": False,
+                "error": "skill-seekers timed out (10min). Try with --no-seekers flag."
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"skill-seekers error: {str(e)}"
+            }
+
+
+def _install_simple(skill: dict, skill_path: Path) -> dict:
+    """Simple installation - generates basic SKILL.md only.
+    
+    Used as fallback when skill-seekers is unavailable or fails.
+    """
+    try:
+        skill_path.mkdir(parents=True, exist_ok=True)
+        
+        # Generate SKILL.md
+        skill_md_content = _generate_skill_md(skill)
+        skill_md_path = skill_path / "SKILL.md"
+        
+        with open(skill_md_path, "w", encoding="utf-8") as f:
+            f.write(skill_md_content)
+        
+        return {
+            "success": True,
+            "method": "simple",
+            "contents": ["SKILL.md"]
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 
 def _generate_skill_md(skill: dict) -> str:

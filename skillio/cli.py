@@ -15,7 +15,12 @@ from rich.panel import Panel
 from rich.markdown import Markdown
 
 from skillio.core.search import search_skills, get_skill_info
-from skillio.core.install import install_skill, list_installed, remove_skill
+from skillio.core.install import (
+    install_skill, 
+    list_installed, 
+    remove_skill,
+    detect_ai_environments
+)
 
 console = Console()
 
@@ -88,30 +93,85 @@ def search(query: str, keyword: bool, limit: int, as_json: bool):
 @click.argument("skill_name")
 @click.option("--target", "-t", default=None, help="Installation target directory")
 @click.option("--force", "-f", is_flag=True, help="Force reinstall if already installed")
-def install(skill_name: str, target: str, force: bool):
-    """Install a skill.
+@click.option("--no-seekers", is_flag=True, help="Skip skill-seekers, use simple generation")
+@click.option("--no-enhance", is_flag=True, help="Skip AI enhancement step")
+@click.option("--scope", type=click.Choice(["project", "global"]), default=None, 
+              help="Install scope: project (.cursor/skills/) or global (~/.cursor/skills/)")
+def install(skill_name: str, target: str, force: bool, no_seekers: bool, no_enhance: bool, scope: str):
+    """Install a skill using skill-seekers for high-quality generation.
     
     Examples:
         skillio install video-downloader
+        skillio install video-downloader --scope project
+        skillio install video-downloader --no-seekers
         skillio install video-downloader --target ~/.cursor/skills/
     """
+    # Get skill info first
+    skill_info = get_skill_info(skill_name)
+    if not skill_info:
+        console.print(f"\n❌ [bold red]Skill not found:[/bold red] {skill_name}")
+        console.print("Try: skillio search to find available skills")
+        return
+    
+    source = skill_info.get("source", {})
+    repo = source.get("repo", "N/A")
+    
     console.print(f"\n📦 Installing skill: [bold cyan]{skill_name}[/bold cyan]")
+    console.print(f"   Source: [dim]{source.get('type', 'unknown')}[/dim] - [dim]{repo}[/dim]")
+    
+    # Determine target based on scope
+    if scope and not target:
+        envs = detect_ai_environments()
+        for env in envs:
+            if env["scope"] == scope and env["type"] == "cursor":
+                target = str(env["path"])
+                break
+    
+    # Show installation method
+    if no_seekers:
+        console.print("   Method: [yellow]Simple (SKILL.md only)[/yellow]")
+    else:
+        console.print("   Method: [green]skill-seekers (full Skill with docs & scripts)[/green]")
+        if not no_enhance:
+            console.print("   Enhancement: [green]AI-enhanced[/green]")
+    
+    console.print("")
     
     try:
-        result = install_skill(skill_name, target=target, force=force)
+        with console.status("[bold green]Generating skill...", spinner="dots"):
+            result = install_skill(
+                skill_name, 
+                target=target, 
+                force=force,
+                use_skill_seekers=not no_seekers,
+                enhance=not no_enhance
+            )
         
         if result["success"]:
-            console.print(f"\n✅ [bold green]Successfully installed {skill_name}![/bold green]")
+            console.print(f"✅ [bold green]Successfully installed {skill_name}![/bold green]")
             console.print(f"   Location: {result['path']}")
+            console.print(f"   Method: {result.get('method', 'unknown')}")
+            
+            # Show generated contents
+            contents = result.get("contents", [])
+            if contents:
+                console.print(f"\n📁 [bold]Generated files:[/bold]")
+                for item in contents[:10]:
+                    console.print(f"   ├── {item}")
+                if len(contents) > 10:
+                    console.print(f"   └── ... and {len(contents) - 10} more files")
             
             # Show usage hint
-            skill_info = get_skill_info(skill_name)
-            if skill_info and skill_info.get("scenarios"):
+            if skill_info.get("scenarios"):
                 console.print(f"\n💡 [bold]Try it:[/bold]")
                 for scenario in skill_info["scenarios"][:2]:
                     console.print(f"   - {scenario}")
         else:
             console.print(f"\n❌ [bold red]Installation failed:[/bold red] {result.get('error', 'Unknown error')}")
+            
+            # Suggest fallback
+            if "skill-seekers" in result.get("error", ""):
+                console.print("\n💡 [bold]Tip:[/bold] Try with --no-seekers flag for simple installation")
     except Exception as e:
         console.print(f"\n❌ [bold red]Error:[/bold red] {str(e)}")
 
@@ -245,6 +305,41 @@ def categories():
         )
     
     console.print(table)
+
+
+@main.command()
+def environments():
+    """Detect and show available AI environments for skill installation."""
+    
+    envs = detect_ai_environments()
+    
+    console.print("\n🔍 [bold]Detected AI Environments[/bold]\n")
+    
+    table = Table()
+    table.add_column("#", style="dim", width=3)
+    table.add_column("Type", style="cyan")
+    table.add_column("Scope", style="yellow")
+    table.add_column("Path", style="white")
+    table.add_column("Status", style="green")
+    
+    for i, env in enumerate(envs, 1):
+        status = "✓ exists" if env.get("exists") else "○ will create"
+        table.add_row(
+            str(i),
+            env["type"],
+            env["scope"],
+            str(env["path"]),
+            status
+        )
+    
+    console.print(table)
+    
+    # Show recommendation
+    if envs:
+        recommended = envs[0]
+        console.print(f"\n💡 [bold]Recommended:[/bold] {recommended['type']} ({recommended['scope']})")
+        console.print(f"   Path: {recommended['path']}")
+        console.print(f"\n   Use: skillio install <skill> --scope {recommended['scope']}")
 
 
 if __name__ == "__main__":
