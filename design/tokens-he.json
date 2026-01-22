@@ -1,0 +1,61 @@
+{
+  "style_name": "Skillio HE Design",
+  "description": "基于 HE Design 东方极简设计系统，融合 CLI 工具美学。温暖典雅，专业可信。",
+  "colors": {
+    "background": {
+      "main": "#FAFAF9",
+      "surface": "#FFFFFF",
+      "sidebar": "#F5F5F4",
+      "code": "#1E293B"
+    },
+    "text": {
+      "primary": "#2D3748",
+      "secondary": "#64748B",
+      "tertiary": "#94A3B8",
+      "inverse": "#FFFFFF"
+    },
+    "brand": {
+      "main": "#305A75",
+      "hover": "#25485E",
+      "light": "#EBF2F5"
+    },
+    "accent": {
+      "main": "#C64F45",
+      "hover": "#A93F36",
+      "light": "#FEF2F2"
+    },
+    "gold": {
+      "main": "#D4B385",
+      "light": "#FDF8F0"
+    },
+    "terminal": {
+      "bg": "#0F172A",
+      "surface": "#1E293B",
+      "green": "#22C55E",
+      "yellow": "#FACC15",
+      "red": "#EF4444",
+      "blue": "#60A5FA",
+      "purple": "#A78BFA",
+      "text": "#E2E8F0"
+    },
+    "border": {
+      "light": "#F1F5F9",
+      "main": "#E2E8F0"
+    }
+  },
+  "typography": {
+    "font_serif": "Noto Serif SC, Playfair Display, serif",
+    "font_sans": "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    "font_mono": "JetBrains Mono, Fira Code, monospace"
+  },
+  "shadows": {
+    "ink": "0 4px 20px -2px rgba(48, 90, 117, 0.08)",
+    "ink_hover": "0 20px 40px -8px rgba(48, 90, 117, 0.12)",
+    "modal": "0 25px 50px -12px rgba(0, 0, 0, 0.15)"
+  },
+  "effects": {
+    "ink_spread": "水墨晕染扩散效果",
+    "card_float": "卡片悬浮上移效果",
+    "gradient_animate": "背景渐变动画"
+  }
+}
