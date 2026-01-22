@@ -1,0 +1,1001 @@
+# Skillio Seed Skills Index
+# Auto-generated: 2026-01-22
+# Total: 50 skills
+
+skills:
+
+  # ============================================
+  # Media - Video
+  # ============================================
+
+  - name: video-downloader
+    version: "1.0.0"
+    description: "Download videos from YouTube, Bilibili, and 1000+ sites"
+    description_zh: "从 YouTube、B站等上千个网站下载视频"
+    capabilities:
+      - video download
+      - YouTube
+      - Bilibili
+      - Twitter
+      - batch download
+    scenarios:
+      - "download YouTube video"
+      - "下载 B 站视频"
+      - "save video for offline"
+      - "download playlist"
+    source:
+      type: github
+      repo: yt-dlp/yt-dlp
+    dependencies:
+      - python >= 3.8
+      - ffmpeg
+    tags: [media, download, cli]
+    license: "Unlicense"
+    quality_score: 9.5
+
+  - name: video-converter
+    version: "1.0.0"
+    description: "Convert video formats, extract audio, create GIFs"
+    description_zh: "视频格式转换、提取音频、制作 GIF"
+    capabilities:
+      - video convert
+      - audio extract
+      - gif create
+      - video compress
+      - video trim
+    scenarios:
+      - "convert MP4 to GIF"
+      - "extract audio from video"
+      - "compress video file"
+      - "视频转 GIF"
+    source:
+      type: github
+      repo: FFmpeg/FFmpeg
+    dependencies:
+      - ffmpeg
+    tags: [media, convert, cli]
+    license: "LGPL"
+    quality_score: 9.8
+
+  - name: video-editor
+    version: "1.0.0"
+    description: "Edit videos from command line - trim, merge, add subtitles"
+    description_zh: "命令行视频编辑 - 剪切、合并、添加字幕"
+    capabilities:
+      - video trim
+      - video merge
+      - subtitle add
+      - video speed
+    scenarios:
+      - "trim video from 1:00 to 2:00"
+      - "merge multiple videos"
+      - "add subtitles to video"
+    source:
+      type: github
+      repo: FFmpeg/FFmpeg
+    dependencies:
+      - ffmpeg
+    tags: [media, edit, cli]
+    license: "LGPL"
+    quality_score: 9.0
+
+  # ============================================
+  # Media - Audio
+  # ============================================
+
+  - name: audio-converter
+    version: "1.0.0"
+    description: "Convert audio formats - MP3, WAV, FLAC, AAC"
+    description_zh: "音频格式转换 - MP3、WAV、FLAC、AAC"
+    capabilities:
+      - audio convert
+      - mp3 convert
+      - flac convert
+    scenarios:
+      - "convert WAV to MP3"
+      - "转换音频格式"
+    source:
+      type: github
+      repo: FFmpeg/FFmpeg
+    dependencies:
+      - ffmpeg
+    tags: [media, audio, convert]
+    license: "LGPL"
+    quality_score: 9.0
+
+  - name: audio-recorder
+    version: "1.0.0"
+    description: "Record audio from microphone or system"
+    description_zh: "录制麦克风或系统音频"
+    capabilities:
+      - audio record
+      - screen record audio
+    scenarios:
+      - "record microphone audio"
+      - "录制系统声音"
+    source:
+      type: github
+      repo: FFmpeg/FFmpeg
+    dependencies:
+      - ffmpeg
+    tags: [media, audio, record]
+    license: "LGPL"
+    quality_score: 8.5
+
+  # ============================================
+  # Media - Image
+  # ============================================
+
+  - name: image-converter
+    version: "1.0.0"
+    description: "Convert and process images - resize, crop, format convert"
+    description_zh: "图片转换处理 - 缩放、裁剪、格式转换"
+    capabilities:
+      - image convert
+      - image resize
+      - image crop
+      - image compress
+    scenarios:
+      - "convert PNG to JPG"
+      - "resize image to 800x600"
+      - "compress image"
+      - "批量转换图片格式"
+    source:
+      type: github
+      repo: ImageMagick/ImageMagick
+    dependencies:
+      - imagemagick
+    tags: [media, image, convert]
+    license: "Apache-2.0"
+    quality_score: 9.5
+
+  - name: image-ocr
+    version: "1.0.0"
+    description: "Extract text from images using OCR"
+    description_zh: "OCR 识别图片中的文字"
+    capabilities:
+      - image ocr
+      - text extract
+      - screenshot ocr
+    scenarios:
+      - "extract text from screenshot"
+      - "识别图片文字"
+      - "OCR this image"
+    source:
+      type: github
+      repo: tesseract-ocr/tesseract
+    dependencies:
+      - tesseract
+    tags: [media, ocr, text]
+    license: "Apache-2.0"
+    quality_score: 9.0
+
+  - name: image-optimizer
+    version: "1.0.0"
+    description: "Optimize and compress images for web"
+    description_zh: "优化压缩图片用于网页"
+    capabilities:
+      - image compress
+      - image optimize
+      - web optimize
+    scenarios:
+      - "compress images for website"
+      - "optimize PNG files"
+      - "压缩图片"
+    source:
+      type: github
+      repo: lovell/sharp
+    dependencies:
+      - node >= 18
+    tags: [media, image, optimize]
+    license: "Apache-2.0"
+    quality_score: 9.0
+
+  # ============================================
+  # Document - PDF
+  # ============================================
+
+  - name: pdf-converter
+    version: "1.0.0"
+    description: "Convert PDF to/from various formats"
+    description_zh: "PDF 格式互转 - Word、图片、HTML"
+    capabilities:
+      - pdf convert
+      - pdf to word
+      - pdf to image
+      - word to pdf
+    scenarios:
+      - "convert PDF to Word"
+      - "PDF 转 Word"
+      - "convert Word to PDF"
+      - "PDF to images"
+    source:
+      type: github
+      repo: jgm/pandoc
+    dependencies:
+      - pandoc
+      - texlive (optional)
+    tags: [document, pdf, convert]
+    license: "GPL-2.0"
+    quality_score: 9.0
+
+  - name: pdf-merger
+    version: "1.0.0"
+    description: "Merge and split PDF files"
+    description_zh: "合并和拆分 PDF 文件"
+    capabilities:
+      - pdf merge
+      - pdf split
+      - pdf extract pages
+    scenarios:
+      - "merge multiple PDFs"
+      - "合并 PDF"
+      - "split PDF by pages"
+      - "extract pages from PDF"
+    source:
+      type: github
+      repo: pdftk-java/pdftk
+    dependencies:
+      - java >= 8
+    tags: [document, pdf, merge]
+    license: "GPL-2.0"
+    quality_score: 8.5
+
+  - name: pdf-extractor
+    version: "1.0.0"
+    description: "Extract text, tables, and images from PDF"
+    description_zh: "从 PDF 提取文字、表格和图片"
+    capabilities:
+      - pdf extract text
+      - pdf extract table
+      - pdf extract image
+    scenarios:
+      - "extract text from PDF"
+      - "提取 PDF 表格"
+      - "get images from PDF"
+    source:
+      type: github
+      repo: jsvine/pdfplumber
+    dependencies:
+      - python >= 3.8
+    tags: [document, pdf, extract]
+    license: "MIT"
+    quality_score: 8.5
+
+  # ============================================
+  # Document - Office
+  # ============================================
+
+  - name: doc-converter
+    version: "1.0.0"
+    description: "Convert between document formats - DOCX, ODT, Markdown, HTML"
+    description_zh: "文档格式互转 - Word、Markdown、HTML"
+    capabilities:
+      - doc convert
+      - markdown convert
+      - html convert
+      - docx convert
+    scenarios:
+      - "convert Markdown to Word"
+      - "Markdown 转 PDF"
+      - "HTML to Markdown"
+      - "convert DOCX to PDF"
+    source:
+      type: github
+      repo: jgm/pandoc
+    dependencies:
+      - pandoc
+    tags: [document, convert, markdown]
+    license: "GPL-2.0"
+    quality_score: 9.5
+
+  - name: spreadsheet-processor
+    version: "1.0.0"
+    description: "Process Excel and CSV files"
+    description_zh: "处理 Excel 和 CSV 文件"
+    capabilities:
+      - excel process
+      - csv process
+      - spreadsheet convert
+    scenarios:
+      - "convert Excel to CSV"
+      - "process CSV file"
+      - "Excel 转 CSV"
+    source:
+      type: github
+      repo: burnash/gspread
+    dependencies:
+      - python >= 3.8
+    tags: [document, excel, csv]
+    license: "MIT"
+    quality_score: 8.0
+
+  # ============================================
+  # Web Tools
+  # ============================================
+
+  - name: web-archiver
+    version: "1.0.0"
+    description: "Archive webpages for offline reading"
+    description_zh: "网页存档用于离线阅读"
+    capabilities:
+      - web archive
+      - webpage save
+      - offline save
+    scenarios:
+      - "save webpage for offline"
+      - "archive this website"
+      - "保存网页"
+    source:
+      type: github
+      repo: ArchiveBox/ArchiveBox
+    dependencies:
+      - python >= 3.9
+      - chrome/chromium
+    tags: [web, archive, offline]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: web-to-app
+    version: "1.0.0"
+    description: "Convert any webpage to desktop app"
+    description_zh: "将网页打包成桌面应用"
+    capabilities:
+      - web to app
+      - desktop app
+      - pwa
+    scenarios:
+      - "convert website to desktop app"
+      - "make desktop app from URL"
+      - "网页转桌面应用"
+    source:
+      type: github
+      repo: pake-core/pake
+    dependencies:
+      - rust
+      - node >= 16
+    tags: [web, app, desktop]
+    license: "MIT"
+    quality_score: 8.5
+
+  - name: web-scraper
+    version: "1.0.0"
+    description: "Scrape data from websites"
+    description_zh: "从网站抓取数据"
+    capabilities:
+      - web scrape
+      - data extract
+      - html parse
+    scenarios:
+      - "scrape data from website"
+      - "extract content from webpage"
+      - "爬取网页数据"
+    source:
+      type: github
+      repo: scrapy/scrapy
+    dependencies:
+      - python >= 3.8
+    tags: [web, scrape, data]
+    license: "BSD-3"
+    quality_score: 9.0
+
+  - name: web-screenshot
+    version: "1.0.0"
+    description: "Take screenshots of webpages"
+    description_zh: "网页截图"
+    capabilities:
+      - web screenshot
+      - full page screenshot
+      - webpage capture
+    scenarios:
+      - "take full page screenshot"
+      - "capture webpage as image"
+      - "网页长截图"
+    source:
+      type: github
+      repo: nickvdyck/scapture
+    dependencies:
+      - node >= 16
+      - puppeteer
+    tags: [web, screenshot, capture]
+    license: "MIT"
+    quality_score: 8.0
+
+  # ============================================
+  # Development Tools
+  # ============================================
+
+  - name: code-search
+    version: "1.0.0"
+    description: "Fast code search with regex support"
+    description_zh: "快速代码搜索，支持正则表达式"
+    capabilities:
+      - code search
+      - regex search
+      - file search
+    scenarios:
+      - "search for function in codebase"
+      - "find all TODO comments"
+      - "搜索代码"
+    source:
+      type: github
+      repo: BurntSushi/ripgrep
+    dependencies: []
+    tags: [dev, search, cli]
+    license: "MIT"
+    quality_score: 9.8
+
+  - name: code-formatter
+    version: "1.0.0"
+    description: "Format code in multiple languages"
+    description_zh: "多语言代码格式化"
+    capabilities:
+      - code format
+      - prettier
+      - lint fix
+    scenarios:
+      - "format JavaScript code"
+      - "格式化代码"
+      - "fix code style"
+    source:
+      type: github
+      repo: prettier/prettier
+    dependencies:
+      - node >= 16
+    tags: [dev, format, lint]
+    license: "MIT"
+    quality_score: 9.5
+
+  - name: json-processor
+    version: "1.0.0"
+    description: "Process and query JSON data"
+    description_zh: "处理和查询 JSON 数据"
+    capabilities:
+      - json process
+      - json query
+      - json format
+    scenarios:
+      - "extract field from JSON"
+      - "format JSON file"
+      - "处理 JSON 数据"
+    source:
+      type: github
+      repo: jqlang/jq
+    dependencies: []
+    tags: [dev, json, data]
+    license: "MIT"
+    quality_score: 9.5
+
+  - name: csv-processor
+    version: "1.0.0"
+    description: "Process and query CSV files"
+    description_zh: "处理和查询 CSV 文件"
+    capabilities:
+      - csv process
+      - csv query
+      - csv convert
+    scenarios:
+      - "query CSV file"
+      - "convert CSV to JSON"
+      - "处理 CSV"
+    source:
+      type: github
+      repo: wireservice/csvkit
+    dependencies:
+      - python >= 3.8
+    tags: [dev, csv, data]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: git-tool
+    version: "1.0.0"
+    description: "Enhanced Git operations"
+    description_zh: "增强的 Git 操作工具"
+    capabilities:
+      - git enhance
+      - git workflow
+      - git automation
+    scenarios:
+      - "undo last commit"
+      - "squash commits"
+      - "Git 操作"
+    source:
+      type: github
+      repo: tj/git-extras
+    dependencies:
+      - git
+    tags: [dev, git, vcs]
+    license: "MIT"
+    quality_score: 8.5
+
+  - name: api-client
+    version: "1.0.0"
+    description: "Test and interact with HTTP APIs"
+    description_zh: "测试和交互 HTTP API"
+    capabilities:
+      - api test
+      - http request
+      - rest client
+    scenarios:
+      - "test API endpoint"
+      - "send HTTP request"
+      - "测试 API"
+    source:
+      type: github
+      repo: httpie/cli
+    dependencies:
+      - python >= 3.8
+    tags: [dev, api, http]
+    license: "BSD-3"
+    quality_score: 9.0
+
+  # ============================================
+  # Network Tools
+  # ============================================
+
+  - name: file-downloader
+    version: "1.0.0"
+    description: "Download files with resume support"
+    description_zh: "断点续传下载文件"
+    capabilities:
+      - file download
+      - batch download
+      - resume download
+    scenarios:
+      - "download large file"
+      - "batch download files"
+      - "下载文件"
+    source:
+      type: github
+      repo: aria2/aria2
+    dependencies: []
+    tags: [network, download, cli]
+    license: "GPL-2.0"
+    quality_score: 9.5
+
+  - name: network-proxy
+    version: "1.0.0"
+    description: "Network proxy and tunnel tools"
+    description_zh: "网络代理和隧道工具"
+    capabilities:
+      - proxy
+      - tunnel
+      - vpn
+    scenarios:
+      - "setup proxy"
+      - "create SSH tunnel"
+      - "配置代理"
+    source:
+      type: github
+      repo: v2fly/v2ray-core
+    dependencies: []
+    tags: [network, proxy, security]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: ssh-manager
+    version: "1.0.0"
+    description: "Manage SSH connections and keys"
+    description_zh: "管理 SSH 连接和密钥"
+    capabilities:
+      - ssh manage
+      - ssh key
+      - remote connect
+    scenarios:
+      - "generate SSH key"
+      - "manage SSH config"
+      - "SSH 连接管理"
+    source:
+      type: github
+      repo: xxh/xxh
+    dependencies:
+      - openssh
+    tags: [network, ssh, remote]
+    license: "BSD-2"
+    quality_score: 8.0
+
+  # ============================================
+  # Automation
+  # ============================================
+
+  - name: task-runner
+    version: "1.0.0"
+    description: "Run and automate tasks"
+    description_zh: "运行和自动化任务"
+    capabilities:
+      - task run
+      - automation
+      - workflow
+    scenarios:
+      - "run build task"
+      - "automate workflow"
+      - "自动化任务"
+    source:
+      type: github
+      repo: go-task/task
+    dependencies: []
+    tags: [automation, task, build]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: file-watcher
+    version: "1.0.0"
+    description: "Watch files and run commands on changes"
+    description_zh: "监控文件变化并执行命令"
+    capabilities:
+      - file watch
+      - auto reload
+      - live reload
+    scenarios:
+      - "watch files for changes"
+      - "auto rebuild on save"
+      - "监控文件变化"
+    source:
+      type: github
+      repo: watchexec/watchexec
+    dependencies: []
+    tags: [automation, watch, dev]
+    license: "Apache-2.0"
+    quality_score: 9.0
+
+  - name: cron-manager
+    version: "1.0.0"
+    description: "Manage scheduled tasks"
+    description_zh: "管理定时任务"
+    capabilities:
+      - cron manage
+      - schedule task
+      - timer
+    scenarios:
+      - "schedule a task"
+      - "manage cron jobs"
+      - "定时任务"
+    source:
+      type: github
+      repo: aptible/supercronic
+    dependencies: []
+    tags: [automation, cron, schedule]
+    license: "MIT"
+    quality_score: 8.5
+
+  # ============================================
+  # AI Tools
+  # ============================================
+
+  - name: llm-client
+    version: "1.0.0"
+    description: "CLI interface for LLM APIs"
+    description_zh: "LLM API 命令行客户端"
+    capabilities:
+      - llm chat
+      - ai query
+      - gpt client
+    scenarios:
+      - "ask ChatGPT from terminal"
+      - "命令行 AI 问答"
+      - "query LLM"
+    source:
+      type: github
+      repo: simonw/llm
+    dependencies:
+      - python >= 3.8
+    tags: [ai, llm, cli]
+    license: "Apache-2.0"
+    quality_score: 9.0
+
+  - name: text-embedding
+    version: "1.0.0"
+    description: "Generate text embeddings for semantic search"
+    description_zh: "生成文本向量用于语义搜索"
+    capabilities:
+      - embedding
+      - semantic search
+      - vector
+    scenarios:
+      - "generate embeddings"
+      - "semantic search"
+      - "文本向量化"
+    source:
+      type: github
+      repo: huggingface/transformers
+    dependencies:
+      - python >= 3.8
+      - torch
+    tags: [ai, embedding, nlp]
+    license: "Apache-2.0"
+    quality_score: 9.0
+
+  - name: image-generator
+    version: "1.0.0"
+    description: "Generate images with AI"
+    description_zh: "AI 生成图片"
+    capabilities:
+      - image generate
+      - ai art
+      - stable diffusion
+    scenarios:
+      - "generate image from text"
+      - "AI 生成图片"
+      - "create AI art"
+    source:
+      type: github
+      repo: AUTOMATIC1111/stable-diffusion-webui
+    dependencies:
+      - python >= 3.10
+      - cuda (optional)
+    tags: [ai, image, generate]
+    license: "AGPL-3.0"
+    quality_score: 9.0
+
+  - name: speech-to-text
+    version: "1.0.0"
+    description: "Transcribe audio to text"
+    description_zh: "语音转文字"
+    capabilities:
+      - speech to text
+      - transcribe
+      - voice recognition
+    scenarios:
+      - "transcribe audio file"
+      - "语音转文字"
+      - "convert speech to text"
+    source:
+      type: github
+      repo: openai/whisper
+    dependencies:
+      - python >= 3.8
+      - ffmpeg
+    tags: [ai, speech, transcribe]
+    license: "MIT"
+    quality_score: 9.5
+
+  - name: text-to-speech
+    version: "1.0.0"
+    description: "Convert text to speech"
+    description_zh: "文字转语音"
+    capabilities:
+      - text to speech
+      - tts
+      - voice synthesis
+    scenarios:
+      - "convert text to audio"
+      - "文字转语音"
+      - "generate speech"
+    source:
+      type: github
+      repo: coqui-ai/TTS
+    dependencies:
+      - python >= 3.8
+    tags: [ai, speech, tts]
+    license: "MPL-2.0"
+    quality_score: 8.5
+
+  # ============================================
+  # Security Tools
+  # ============================================
+
+  - name: password-manager
+    version: "1.0.0"
+    description: "Manage passwords from command line"
+    description_zh: "命令行密码管理"
+    capabilities:
+      - password manage
+      - secret store
+      - credential
+    scenarios:
+      - "store password securely"
+      - "管理密码"
+      - "generate password"
+    source:
+      type: github
+      repo: gopasspw/gopass
+    dependencies: []
+    tags: [security, password, cli]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: file-encryptor
+    version: "1.0.0"
+    description: "Encrypt and decrypt files"
+    description_zh: "加密和解密文件"
+    capabilities:
+      - file encrypt
+      - file decrypt
+      - gpg
+    scenarios:
+      - "encrypt file"
+      - "加密文件"
+      - "decrypt file"
+    source:
+      type: github
+      repo: FiloSottile/age
+    dependencies: []
+    tags: [security, encrypt, cli]
+    license: "BSD-3"
+    quality_score: 9.0
+
+  - name: hash-tool
+    version: "1.0.0"
+    description: "Calculate and verify file hashes"
+    description_zh: "计算和验证文件哈希"
+    capabilities:
+      - hash calculate
+      - checksum verify
+      - md5 sha256
+    scenarios:
+      - "calculate file hash"
+      - "verify checksum"
+      - "计算 MD5"
+    source:
+      type: github
+      repo: rhash/RHash
+    dependencies: []
+    tags: [security, hash, verify]
+    license: "MIT"
+    quality_score: 8.5
+
+  # ============================================
+  # System Tools
+  # ============================================
+
+  - name: disk-analyzer
+    version: "1.0.0"
+    description: "Analyze disk usage"
+    description_zh: "分析磁盘使用"
+    capabilities:
+      - disk analyze
+      - disk usage
+      - storage
+    scenarios:
+      - "find large files"
+      - "analyze disk usage"
+      - "查找大文件"
+    source:
+      type: github
+      repo: bootandy/dust
+    dependencies: []
+    tags: [system, disk, analyze]
+    license: "Apache-2.0"
+    quality_score: 9.0
+
+  - name: process-monitor
+    version: "1.0.0"
+    description: "Monitor system processes"
+    description_zh: "监控系统进程"
+    capabilities:
+      - process monitor
+      - system monitor
+      - resource usage
+    scenarios:
+      - "monitor CPU usage"
+      - "监控进程"
+      - "check system resources"
+    source:
+      type: github
+      repo: ClementTsang/bottom
+    dependencies: []
+    tags: [system, monitor, process]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: file-manager
+    version: "1.0.0"
+    description: "Terminal file manager"
+    description_zh: "终端文件管理器"
+    capabilities:
+      - file manage
+      - file browser
+      - terminal ui
+    scenarios:
+      - "browse files in terminal"
+      - "终端文件管理"
+      - "navigate directories"
+    source:
+      type: github
+      repo: kamiyaa/joshuto
+    dependencies: []
+    tags: [system, file, tui]
+    license: "LGPL-3.0"
+    quality_score: 8.5
+
+  - name: clipboard-manager
+    version: "1.0.0"
+    description: "Manage clipboard history"
+    description_zh: "管理剪贴板历史"
+    capabilities:
+      - clipboard manage
+      - copy paste
+      - clipboard history
+    scenarios:
+      - "access clipboard history"
+      - "剪贴板管理"
+      - "paste from history"
+    source:
+      type: github
+      repo: Slackadays/Clipboard
+    dependencies: []
+    tags: [system, clipboard, utility]
+    license: "GPL-3.0"
+    quality_score: 8.0
+
+  # ============================================
+  # Text Processing
+  # ============================================
+
+  - name: text-editor
+    version: "1.0.0"
+    description: "Modern terminal text editor"
+    description_zh: "现代终端文本编辑器"
+    capabilities:
+      - text edit
+      - code edit
+      - terminal editor
+    scenarios:
+      - "edit file in terminal"
+      - "终端编辑文件"
+      - "quick edit"
+    source:
+      type: github
+      repo: helix-editor/helix
+    dependencies: []
+    tags: [text, editor, tui]
+    license: "MPL-2.0"
+    quality_score: 9.0
+
+  - name: text-diff
+    version: "1.0.0"
+    description: "Compare and diff files"
+    description_zh: "比较和对比文件"
+    capabilities:
+      - text diff
+      - file compare
+      - merge
+    scenarios:
+      - "compare two files"
+      - "文件对比"
+      - "show differences"
+    source:
+      type: github
+      repo: dandavison/delta
+    dependencies:
+      - git
+    tags: [text, diff, git]
+    license: "MIT"
+    quality_score: 9.0
+
+  - name: text-translator
+    version: "1.0.0"
+    description: "Translate text between languages"
+    description_zh: "多语言文本翻译"
+    capabilities:
+      - translate
+      - language detect
+      - multilingual
+    scenarios:
+      - "translate to Chinese"
+      - "翻译文本"
+      - "translate from English"
+    source:
+      type: github
+      repo: soimort/translate-shell
+    dependencies: []
+    tags: [text, translate, language]
+    license: "Public Domain"
+    quality_score: 8.5
+
+# Index metadata
+metadata:
+  version: "1.0.0"
+  generated: "2026-01-22"
+  total_skills: 50
+  categories:
+    - media (9)
+    - document (5)
+    - web (4)
+    - development (6)
+    - network (3)
+    - automation (3)
+    - ai (5)
+    - security (3)
+    - system (4)
+    - text (3)

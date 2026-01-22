@@ -1,0 +1,163 @@
+# Skillio Skill Schema Definition
+# Version: 1.0.0
+
+# Required fields
+required:
+  - name          # Unique identifier (lowercase, hyphens allowed)
+  - version       # Semantic version (e.g., 1.0.0)
+  - description   # Short description (max 200 chars)
+  - capabilities  # List of capability tags
+  - source        # Source information
+
+# Full schema
+schema:
+  name:
+    type: string
+    pattern: "^[a-z][a-z0-9-]*$"
+    description: "Unique skill identifier"
+    example: "video-downloader"
+
+  version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+    description: "Semantic version"
+    example: "1.0.0"
+
+  description:
+    type: string
+    maxLength: 200
+    description: "Short description of the skill"
+    example: "Download videos from YouTube, Bilibili, and 1000+ sites"
+
+  description_zh:
+    type: string
+    maxLength: 200
+    description: "Chinese description (optional)"
+    example: "从 YouTube、B站等上千个网站下载视频"
+
+  capabilities:
+    type: array
+    items: string
+    minItems: 1
+    description: "Capability tags for matching"
+    example:
+      - video download
+      - YouTube
+      - Bilibili
+
+  scenarios:
+    type: array
+    items: string
+    description: "Usage scenarios in natural language"
+    example:
+      - "I want to download a YouTube video"
+      - "下载 B 站视频"
+
+  source:
+    type: object
+    properties:
+      type:
+        enum: [github, docs, manual, npm, pypi]
+      repo:
+        type: string
+        description: "For github type: owner/repo"
+      url:
+        type: string
+        description: "For docs type: documentation URL"
+    example:
+      type: github
+      repo: yt-dlp/yt-dlp
+
+  dependencies:
+    type: array
+    items: string
+    description: "System or runtime dependencies"
+    example:
+      - python >= 3.8
+      - ffmpeg
+
+  platforms:
+    type: array
+    items:
+      enum: [macos, linux, windows]
+    default: [macos, linux, windows]
+    description: "Supported platforms"
+
+  tags:
+    type: array
+    items: string
+    description: "Additional categorization tags"
+    example:
+      - media
+      - download
+      - cli
+
+  author:
+    type: string
+    description: "Skill author or maintainer"
+
+  license:
+    type: string
+    description: "License of the underlying tool"
+    example: "MIT"
+
+  quality_score:
+    type: number
+    minimum: 0
+    maximum: 10
+    description: "Quality score (auto-calculated or manual)"
+
+  install_count:
+    type: integer
+    minimum: 0
+    description: "Number of installations (tracked by registry)"
+
+# Capability Tag Taxonomy
+capability_taxonomy:
+  media:
+    - video download
+    - video convert
+    - video edit
+    - audio extract
+    - audio convert
+    - image convert
+    - image compress
+    - image ocr
+
+  document:
+    - pdf convert
+    - pdf merge
+    - pdf extract
+    - doc convert
+    - markdown convert
+    - text extract
+
+  web:
+    - web scrape
+    - web archive
+    - web to app
+    - api client
+
+  development:
+    - code search
+    - code format
+    - code lint
+    - git tool
+    - json process
+    - csv process
+
+  network:
+    - download
+    - proxy
+    - tunnel
+    - ssh
+
+  automation:
+    - task scheduler
+    - script runner
+    - workflow
+
+  ai:
+    - llm client
+    - embedding
+    - image generation
